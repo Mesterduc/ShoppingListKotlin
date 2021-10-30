@@ -11,5 +11,8 @@ class MainViewModel: ViewModel() {
     fun getData(): MutableLiveData<MutableList<Product>> {
         return Repository.getData()
     }
+    fun add() {
+        Repository.addProduct("hello")
+    }
 
 }

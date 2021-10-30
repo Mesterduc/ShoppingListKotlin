@@ -17,12 +17,21 @@ object Repository {
         return productListener
     }
 
+    fun addProduct(productName: String){
+        Log.d("hej","create hej")
+        products.add(Product(name="tomater2"))
+        getData()
+    }
+
+
     fun createTestData()
     {
         //add some products to the products list - for testing purposes
         Log.d("Repository","create testdata")
+
         products.add(Product(name="tomater"))
         products.add(Product(name="bønner"))
+
     }
 
 }
