@@ -3,7 +3,7 @@ package com.example.shoppingliststartcodekotlin
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-//import androidx.databinding.DataBindingUtil
+import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate( savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
@@ -33,11 +33,12 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
 //        binding = DataBindingUtil.inflate(layoutInflater, R.layout.activity_main, container, false)
+//        binding.vm = viewModel
 
 
         viewModel.getData().observe(this, Observer {
             Log.d("Products","Found ${it.size} products")
-            binding.recyclerView
+           // binding.recyclerView
             updateUI(it)
         })
 

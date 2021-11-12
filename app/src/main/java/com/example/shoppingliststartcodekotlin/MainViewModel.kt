@@ -1,5 +1,7 @@
 package com.example.shoppingliststartcodekotlin
 
+import android.util.Log
+import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,6 +14,7 @@ class MainViewModel: ViewModel() {
         return Repository.getData()
     }
     fun add() {
+        Log.d("hej","create vm")
         Repository.addProduct("hello")
     }
 

@@ -18,9 +18,10 @@ object Repository {
     }
 
     fun addProduct(productName: String){
-        Log.d("hej","create hej")
+        Log.d("hej","create repo")
         products.add(Product(name="tomater2"))
-        getData()
+        productListener.value = products
+//        getData()
     }
 
 
