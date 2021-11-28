@@ -51,6 +51,7 @@ class ProductAdapter(var products: MutableList<Product>) :
         fun bindItems(product: Product) {
 
             itemView.textViewNameeeeee.text = product.name.toString()
+            itemView.textViewQuantity.text = product.units.toString()
         }
 
     }

@@ -12,19 +12,16 @@ import com.example.shoppingliststartcodekotlin.adapters.ProductAdapter
 import com.example.shoppingliststartcodekotlin.data.Product
 import com.example.shoppingliststartcodekotlin.databinding.ActivityMainBinding
 import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
     //you need to have an Adapter for the products
-   lateinit var adapter: ProductAdapter
-   lateinit var binding : ActivityMainBinding
-   lateinit var viewModel : MainViewModel
+    lateinit var adapter: ProductAdapter
+    lateinit var binding: ActivityMainBinding
+    lateinit var viewModel: MainViewModel
 
-   private lateinit var binding2 : ShoppingItemBinding
-
-
-
-    override fun onCreate( savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
@@ -32,23 +29,23 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-//        binding = DataBindingUtil.inflate(layoutInflater, R.layout.activity_main, container, false)
-//        binding.vm = viewModel
-
-
         viewModel.getData().observe(this, Observer {
-            Log.d("Products","Found ${it.size} products")
-           // binding.recyclerView
+            Log.d("Products", "Found ${it.size} products")
             updateUI(it)
         })
 
         binding.addProductButton.setOnClickListener {
-            viewModel.add()
+            viewModel.add(
+                binding.productName.text.toString(),
+                binding.productUnits.text.toString().toInt()
+            )
+            binding.productName.text.clear()
+            binding.productUnits.text.clear()
         }
     }
 
 
-    fun updateUI(products : MutableList<Product>) {
+    fun updateUI(products: MutableList<Product>) {
         val layoutManager = LinearLayoutManager(this)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -59,9 +56,9 @@ class MainActivity : AppCompatActivity() {
 
 //        binding.recyclerView.layoutManager = layoutManager
 
-       adapter = ProductAdapter(products)
+        adapter = ProductAdapter(products)
 
-      /*connecting the recyclerview to the adapter  */
+        /*connecting the recyclerview to the adapter  */
         binding.recyclerView.adapter = adapter
 
     }
