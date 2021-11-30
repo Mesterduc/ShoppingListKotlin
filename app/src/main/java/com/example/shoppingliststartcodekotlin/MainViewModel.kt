@@ -18,4 +18,23 @@ class MainViewModel: ViewModel() {
         Repository.addProduct(productName, quantity)
     }
 
+    fun deleteItemAt(position: Int){
+        Repository.deleteProductAt(position)
+    }
+    fun createItemAt(position: Int, item: Product){
+        Repository.createProductAt(position, item)
+    }
+
+    fun getProductAt(position: Int): Product{
+        return Repository.getProductAt(position)
+    }
+
+    fun clearList(){
+        Repository.clearList()
+    }
+
+
+
+
+
 }

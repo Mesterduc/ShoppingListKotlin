@@ -33,6 +33,26 @@ object Repository {
         productListener.value = products
     }
 
+    fun deleteProductAt(position: Int){
+        Log.d("hej","delete product")
+        products.removeAt(position)
+        productListener.value = products
+    }
+
+    fun getProductAt(position: Int): Product {
+        return products.get(position)
+    }
+
+    fun createProductAt(position: Int, item: Product){
+        products.add(position,Product(item.name, item.units))
+        productListener.value = products
+    }
+
+    fun clearList(){
+        products.clear()
+        productListener.value = products
+    }
+
 
     fun createTestData()
     {

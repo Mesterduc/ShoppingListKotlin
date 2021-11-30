@@ -10,6 +10,7 @@ import com.example.shoppingliststartcodekotlin.R
 import com.example.shoppingliststartcodekotlin.data.Product
 import kotlinx.android.synthetic.main.shopping_item.view.*
 import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
+import com.google.android.material.snackbar.Snackbar
 
 
 class ProductAdapter(var products: MutableList<Product>) :
@@ -21,6 +22,18 @@ class ProductAdapter(var products: MutableList<Product>) :
     //This is a set of the items we have in our collection
 //    private lateinit var binding: RecyclerView
     private lateinit var binding: ShoppingItemBinding
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bindItems(product: Product) {
+            itemView.textViewNameeeeee.text = product.name.toString()
+            itemView.textViewQuantity.text = product.units.toString()
+
+            itemView.setOnClickListener{
+                val snack = Snackbar.make(it,product.name.toString(),Snackbar.LENGTH_LONG)
+                snack.show()
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductAdapter.ViewHolder {
 //        TODO("Not yet implemented")
@@ -42,17 +55,4 @@ class ProductAdapter(var products: MutableList<Product>) :
          return products.size
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        //here you need to to do stuff also - go back to the exercises
-        //about recyclerviews and you can use approach that were used
-        //in the exercise about recyclerviews from the book (lesson 3)
-        //if you did not do that exercise - then first do that exercise in
-        //a seperate project to learn about using a ViewHolder
-        fun bindItems(product: Product) {
-
-            itemView.textViewNameeeeee.text = product.name.toString()
-            itemView.textViewQuantity.text = product.units.toString()
-        }
-
-    }
 }

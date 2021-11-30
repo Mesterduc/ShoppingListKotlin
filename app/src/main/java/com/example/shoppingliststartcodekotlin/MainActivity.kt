@@ -1,17 +1,22 @@
 package com.example.shoppingliststartcodekotlin
 
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.ViewGroup
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingliststartcodekotlin.adapters.ProductAdapter
 import com.example.shoppingliststartcodekotlin.data.Product
 import com.example.shoppingliststartcodekotlin.databinding.ActivityMainBinding
 import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
@@ -42,11 +47,12 @@ class MainActivity : AppCompatActivity() {
             binding.productName.text.clear()
             binding.productUnits.text.clear()
         }
+
     }
 
 
     fun updateUI(products: MutableList<Product>) {
-        val layoutManager = LinearLayoutManager(this)
+//        val layoutManager = LinearLayoutManager(this)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
@@ -58,8 +64,76 @@ class MainActivity : AppCompatActivity() {
 
         adapter = ProductAdapter(products)
 
+        val itemTouchHelperCallback =
+            object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val product = viewModel.getProductAt(viewHolder.adapterPosition)
+                    val position = viewHolder.adapterPosition
+                    viewModel.deleteItemAt(viewHolder.adapterPosition)
+
+                    Snackbar.make(
+                        binding.root, // The ID of your coordinator_layout
+                        "undo?",
+                        Snackbar.LENGTH_LONG
+                    ).apply {
+                        setAction("UNDO") {
+                            viewModel.createItemAt(position, product)
+//                            Toast.makeText(
+//                                this@MainActivity,
+//                                viewHolder.adapterPosition.toString(),
+//                                Toast.LENGTH_SHORT
+//                            ).show()
+                        }
+                    }.show()
+//                    val hej = Snackbar.make(binding.root, "hello", Snackbar.LENGTH_LONG).setAction("UNDO", viewModel.deleteItem(viewHolder.adapterPosition))
+//                    hej.show()
+                }
+
+
+            }
+
+        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
+        itemTouchHelper.attachToRecyclerView(binding.recyclerView)
+
         /*connecting the recyclerview to the adapter  */
         binding.recyclerView.adapter = adapter
 
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.nav_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_clearList -> clearListAlert()
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+
+    fun clearListAlert() {
+        val alert = AlertDialog.Builder(this)
+        alert.setTitle("Clear the shopping list?")
+        alert.setMessage("Are you sure you want to clear the list?")
+        alert.setNegativeButton("No", DialogInterface.OnClickListener { _, _ ->
+        })
+        alert.setPositiveButton("Yes", DialogInterface.OnClickListener { _, _ ->
+            viewModel.clearList()
+        })
+        alert.show()
+    }
+
 }
