@@ -1,11 +1,13 @@
 package com.example.shoppingliststartcodekotlin
 
 import android.content.DialogInterface
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -40,12 +42,19 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.addProductButton.setOnClickListener {
-            viewModel.add(
-                binding.productName.text.toString(),
-                binding.productUnits.text.toString().toInt()
-            )
-            binding.productName.text.clear()
-            binding.productUnits.text.clear()
+            val name = binding.productName.text
+            val units = binding.productUnits.text
+            if(name.isNotEmpty() && units.isNotEmpty()){
+                viewModel.add(
+                    name.toString(),
+                    units.toString().toInt()
+                )
+                name.clear()
+                units.clear()
+            } else {
+                Toast.makeText(this, "name or units is empty", Toast.LENGTH_LONG).show()
+            }
+
         }
 
     }
@@ -64,6 +73,7 @@ class MainActivity : AppCompatActivity() {
 
         adapter = ProductAdapter(products)
 
+        // swipe to delete
         val itemTouchHelperCallback =
             object :
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
@@ -72,11 +82,11 @@ class MainActivity : AppCompatActivity() {
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean {
-
                     return false
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
                     val product = viewModel.getProductAt(viewHolder.adapterPosition)
                     val position = viewHolder.adapterPosition
                     viewModel.deleteItemAt(viewHolder.adapterPosition)
@@ -88,20 +98,10 @@ class MainActivity : AppCompatActivity() {
                     ).apply {
                         setAction("UNDO") {
                             viewModel.createItemAt(position, product)
-//                            Toast.makeText(
-//                                this@MainActivity,
-//                                viewHolder.adapterPosition.toString(),
-//                                Toast.LENGTH_SHORT
-//                            ).show()
                         }
                     }.show()
-//                    val hej = Snackbar.make(binding.root, "hello", Snackbar.LENGTH_LONG).setAction("UNDO", viewModel.deleteItem(viewHolder.adapterPosition))
-//                    hej.show()
                 }
-
-
             }
-
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(binding.recyclerView)
 
@@ -118,9 +118,24 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_clearList -> clearListAlert()
+            R.id.nav_share  -> shareList()
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    fun shareList(){
+        val products = viewModel.getList()
+        var productList = "Inkøbs liste: "
+        products.forEach{
+            productList += "${it.name} - ${it.units}, "
+        }
+
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Shared Data")
+        intent.putExtra(Intent.EXTRA_TEXT, productList)
+        startActivity(Intent.createChooser(intent, "Share Using"))
     }
 
 

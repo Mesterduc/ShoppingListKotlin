@@ -8,4 +8,8 @@
         android:id="@+id/nav_clearList"
         android:title="Clear List"
         />
+    <item
+        android:id="@+id/nav_share"
+        android:title="Share List"
+        />
 </menu>

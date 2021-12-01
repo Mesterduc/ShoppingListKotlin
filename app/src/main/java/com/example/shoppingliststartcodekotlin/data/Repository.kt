@@ -53,6 +53,10 @@ object Repository {
         productListener.value = products
     }
 
+    fun getList(): MutableList<Product>{
+        return products
+    }
+
 
     fun createTestData()
     {

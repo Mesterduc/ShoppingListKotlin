@@ -32,6 +32,9 @@ class MainViewModel: ViewModel() {
     fun clearList(){
         Repository.clearList()
     }
+    fun getList(): MutableList<Product>{
+        return Repository.getList()
+    }
 
 
 
