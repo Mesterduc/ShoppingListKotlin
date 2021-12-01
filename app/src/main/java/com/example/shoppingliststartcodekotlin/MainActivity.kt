@@ -51,11 +51,19 @@ class MainActivity : AppCompatActivity() {
                 )
                 name.clear()
                 units.clear()
-            } else {
-                Toast.makeText(this, "name or units is empty", Toast.LENGTH_LONG).show()
+            } else if (name.isNotEmpty()){
+                viewModel.add(
+                    name.toString()
+                )
+                name.clear()
+                units.clear()
+            }
+            else {
+                Toast.makeText(this, "name field is empty", Toast.LENGTH_LONG).show()
             }
 
         }
+
 
     }
 

@@ -14,7 +14,6 @@ class MainViewModel: ViewModel() {
         return Repository.getData()
     }
     fun add(productName: String, quantity: Int = 1) {
-        Log.d("hej","create vm")
         Repository.addProduct(productName, quantity)
     }
 
