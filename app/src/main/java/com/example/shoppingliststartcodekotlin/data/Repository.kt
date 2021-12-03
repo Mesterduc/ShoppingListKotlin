@@ -2,6 +2,8 @@ package com.example.shoppingliststartcodekotlin.data
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -10,32 +12,44 @@ object Repository {
 
     //listener to changes that we can then use in the Activity
     private var productListener = MutableLiveData<MutableList<Product>>()
-//    val db = Firebase.firestore
+    private val db = Firebase.firestore
+    private val docRef = db.collection("Lists").document("rema")
 
     fun getData(): MutableLiveData<MutableList<Product>> {
         if (products.isEmpty())
-//            db.collection("Lists").document("hej")
-//                .get()
-//                .addOnSuccessListener { result ->
-//
-//                .addOnFailureListener { exception ->
-//                    Log.w("hej", "Error getting documents.", exception)
-//                }
-
-            createTestData()
-        productListener.value = products //we inform the listener we have new data
+            docRef.addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.w("TAG", "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+                if (snapshot != null && snapshot.exists()) {
+                    products.clear()
+                    snapshot.data?.forEach {
+//                        Log.d("TAG", "${it.key} + ${it.value}")
+                        products.add(Product(it.key, it.value.toString().toInt()))
+                        productListener.value = products
+                    }
+//                    val data = snapshot.get("list") as Map<String, Int>
+                } else {
+                    Log.d("TAG", "Current data: null")
+                }
+            }
         return productListener
     }
 
-    fun addProduct(productName: String, quantity: Int = 1){
-        Log.d("hej","create repo")
-        products.add(Product(name=productName, units=quantity))
+    fun addProduct(productName: String, quantity: Int = 1) {
+        val newProduct = hashMapOf(productName to quantity)
+        docRef.set(newProduct, SetOptions.merge())
+            .addOnSuccessListener { Log.d("TAG", "DocumentSnapshot successfully written!") }
+            .addOnFailureListener { e -> Log.w("TAG", "Error writing document", e) }
         productListener.value = products
     }
 
-    fun deleteProductAt(position: Int){
-        Log.d("hej","delete product")
-        products.removeAt(position)
+    fun deleteProductAt(productName: String) {
+        val updates = hashMapOf<String, Any>(
+            productName to FieldValue.delete()
+        )
+        docRef.update(updates).addOnCompleteListener { }
         productListener.value = products
     }
 
@@ -43,29 +57,29 @@ object Repository {
         return products.get(position)
     }
 
-    fun createProductAt(position: Int, item: Product){
-        products.add(position,Product(item.name, item.units))
-        productListener.value = products
+    fun clearList() {
+        docRef.get().addOnSuccessListener { hej ->
+            hej.data?.forEach {
+            Log.d("TAG", hej.data.toString())
+                docRef.update(it.key.toString(), FieldValue.delete()).addOnCompleteListener{
+                    productListener.value = products
+                }
+            }
+        }
     }
 
-    fun clearList(){
-        products.clear()
-        productListener.value = products
-    }
-
-    fun getList(): MutableList<Product>{
+    fun getList(): MutableList<Product> {
         return products
     }
 
+    fun sortByName(){
+        products.sortBy { it.name }
+        productListener.value = products
+    }
 
-    fun createTestData()
-    {
-        //add some products to the products list - for testing purposes
-        Log.d("Repository","create testdata")
-
-        products.add(Product(name="tomater", units = 1))
-        products.add(Product(name="bønner", units = 3))
-
+    fun sortByUnits(){
+        products.sortBy { it.units }
+        productListener.value = products
     }
 
 }

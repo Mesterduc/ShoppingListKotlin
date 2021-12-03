@@ -16,10 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingliststartcodekotlin.adapters.ProductAdapter
 import com.example.shoppingliststartcodekotlin.data.Product
+import com.example.shoppingliststartcodekotlin.data.Repository
 import com.example.shoppingliststartcodekotlin.databinding.ActivityMainBinding
 import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -44,26 +46,34 @@ class MainActivity : AppCompatActivity() {
         binding.addProductButton.setOnClickListener {
             val name = binding.productName.text
             val units = binding.productUnits.text
-            if(name.isNotEmpty() && units.isNotEmpty()){
+            if (name.isNotEmpty() && units.isNotEmpty()) {
                 viewModel.add(
                     name.toString(),
                     units.toString().toInt()
                 )
                 name.clear()
                 units.clear()
-            } else if (name.isNotEmpty()){
+            } else if (name.isNotEmpty()) {
                 viewModel.add(
                     name.toString()
                 )
                 name.clear()
                 units.clear()
-            }
-            else {
+            } else {
                 Toast.makeText(this, "name field is empty", Toast.LENGTH_LONG).show()
             }
 
         }
 
+        binding.productNameBtn.setOnClickListener{
+            viewModel.sortByName()
+            Log.d("Products", "Found products")
+        }
+
+        binding.productUnitsBtn.setOnClickListener{
+            viewModel.sortByUnits()
+            Log.d("Products", "Found products")
+        }
 
     }
 
@@ -94,10 +104,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
                     val product = viewModel.getProductAt(viewHolder.adapterPosition)
-                    val position = viewHolder.adapterPosition
-                    viewModel.deleteItemAt(viewHolder.adapterPosition)
+                    viewModel.deleteItemAt(product.name)
 
                     Snackbar.make(
                         binding.root, // The ID of your coordinator_layout
@@ -105,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                         Snackbar.LENGTH_LONG
                     ).apply {
                         setAction("UNDO") {
-                            viewModel.createItemAt(position, product)
+                            viewModel.add(product.name, product.units)
                         }
                     }.show()
                 }
@@ -126,16 +134,16 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_clearList -> clearListAlert()
-            R.id.nav_share  -> shareList()
+            R.id.nav_share -> shareList()
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    fun shareList(){
+    fun shareList() {
         val products = viewModel.getList()
         var productList = "Inkøbs liste: "
-        products.forEach{
+        products.forEach {
             productList += "${it.name} - ${it.units}, "
         }
 
