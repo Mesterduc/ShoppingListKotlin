@@ -9,6 +9,8 @@ import com.example.shoppingliststartcodekotlin.data.Product
 import com.example.shoppingliststartcodekotlin.data.Repository
 
 class MainViewModel : ViewModel() {
+    var isProductSorted = false
+    var isUnitSorted = false
 
     fun getData(): MutableLiveData<MutableList<Product>> {
         return Repository.getData()
@@ -35,11 +37,13 @@ class MainViewModel : ViewModel() {
     }
 
     fun sortByName() {
-        Repository.sortByName()
+        Repository.sortByName(isProductSorted)
+        isProductSorted = !isProductSorted
     }
 
     fun sortByUnits() {
-        Repository.sortByUnits()
+        Repository.sortByUnits(isUnitSorted)
+        isUnitSorted = !isUnitSorted
     }
 
 

@@ -19,6 +19,7 @@ import com.example.shoppingliststartcodekotlin.data.Product
 import com.example.shoppingliststartcodekotlin.data.Repository
 import com.example.shoppingliststartcodekotlin.databinding.ActivityMainBinding
 import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
+import com.example.shoppingliststartcodekotlin.settings.SettingsActivity
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var adapter: ProductAdapter
     lateinit var binding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
+    private val RESULT_CODE_PREFERENCES = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewModel.getData().observe(this, Observer {
-            Log.d("Products", "Found ${it.size} products")
             updateUI(it)
         })
 
@@ -135,6 +136,17 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.nav_clearList -> clearListAlert()
             R.id.nav_share -> shareList()
+//            R.id.nav_settings -> {
+//                val intent = Intent(this, SettingsActivity::class.java)
+//                startActivityForResult(intent, RESULT_CODE_PREFERENCES)
+//            }
+        }
+        if (item.itemId == R.id.nav_settings) {
+            //Start our settingsactivity and listen to result - i.e.
+            //when it is finished.
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivityForResult(intent, RESULT_CODE_PREFERENCES)
+
         }
 
         return super.onOptionsItemSelected(item)

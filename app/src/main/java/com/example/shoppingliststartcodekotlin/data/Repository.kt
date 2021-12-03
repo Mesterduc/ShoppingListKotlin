@@ -72,13 +72,13 @@ object Repository {
         return products
     }
 
-    fun sortByName(){
-        products.sortBy { it.name }
+    fun sortByName(sorted: Boolean){
+        if (sorted)  products.sortBy { it.name } else products.sortByDescending { it.name }
         productListener.value = products
     }
 
-    fun sortByUnits(){
-        products.sortBy { it.units }
+    fun sortByUnits(sorted: Boolean){
+        if (sorted)  products.sortBy { it.units } else products.sortByDescending { it.units }
         productListener.value = products
     }
 
