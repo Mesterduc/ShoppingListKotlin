@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <CheckBoxPreference
-        android:key="male"
-        android:defaultValue="true"
-        android:summary="Male?"
-        android:title="Gender" />
 
     <EditTextPreference
-        android:key="name"
-        android:defaultValue="enterName"
-        android:summary="Enter your name"
-        android:title="Name" />
+        android:key="color"
+        android:defaultValue="#"
+        android:summary="Enter color code"
+        android:title="Background Color" />
 
-    <SwitchPreference
-        android:key="notifications"
-        android:defaultValue="true"
-        android:title="Enable message notifications"/>
 
 </PreferenceScreen>

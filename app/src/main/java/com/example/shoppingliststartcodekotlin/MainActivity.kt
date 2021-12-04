@@ -2,6 +2,7 @@ package com.example.shoppingliststartcodekotlin
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +21,7 @@ import com.example.shoppingliststartcodekotlin.data.Repository
 import com.example.shoppingliststartcodekotlin.databinding.ActivityMainBinding
 import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
 import com.example.shoppingliststartcodekotlin.settings.SettingsActivity
+import com.example.shoppingliststartcodekotlin.settings.SettingsHandler
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.view.*
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
+        view.setBackgroundColor(Color.parseColor(SettingsHandler.getColor(this)))
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewModel.getData().observe(this, Observer {
@@ -76,6 +78,19 @@ class MainActivity : AppCompatActivity() {
             Log.d("Products", "Found products")
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == RESULT_CODE_PREFERENCES)
+        //the code means we came back from settings
+        {
+            val color = SettingsHandler.getColor(this)
+            val message = "Background color code is: $color"
+            val toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
+            toast.show()
+            binding.root.setBackgroundColor(Color.parseColor(color.toString()))
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
 

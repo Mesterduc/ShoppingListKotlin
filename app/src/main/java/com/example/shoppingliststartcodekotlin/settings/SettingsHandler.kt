@@ -7,6 +7,7 @@ object SettingsHandler {
     private const val SETTINGS_GENDERKEY = "male"
     private const val SETTINGS_NAMEKEY = "name"
     private const val SETTINGS_NOTIFICATONS = "notifications"
+    private const val SETTINGS_COLOR = "color"
 
     fun useNotifications(context: Context) : Boolean {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(SETTINGS_NOTIFICATONS,true)
@@ -20,5 +21,9 @@ object SettingsHandler {
 
     fun getName(context: Context): String {
         return PreferenceManager.getDefaultSharedPreferences(context).getString(SETTINGS_NAMEKEY, "")!!
+    }
+
+    fun getColor(context: Context): String {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(SETTINGS_COLOR, "#0000FF")!!
     }
 }
