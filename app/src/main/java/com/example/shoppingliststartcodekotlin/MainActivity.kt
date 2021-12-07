@@ -96,12 +96,12 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
         // Logged in?
         val currentUser = auth.currentUser
         if (currentUser == null) {
             var intent = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intent)
-
         } else {
             Toast.makeText(
                 this, "Welcome",
@@ -129,13 +129,16 @@ class MainActivity : AppCompatActivity() {
 
 
     fun updateUI(products: MutableList<Product>) {
-//        val layoutManager = LinearLayoutManager(this)
-
         binding.recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
-//        binding.recyclerView.layoutManager = layoutManager
-
         adapter = ProductAdapter(products)
+        adapter.setOnItemClickListener(object : ProductAdapter.onItemClickListener{
+            override fun onItemClick(productName: String, productUnit: Int) {
+                viewModel.changeProduct(productName, productUnit)
+                val toast = Toast.makeText(this@MainActivity, productName, Toast.LENGTH_SHORT)
+                toast.show()
+            }
+        })
 
         // swipe to delete
         val itemTouchHelperCallback =

@@ -13,8 +13,17 @@ import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
 import com.google.android.material.snackbar.Snackbar
 
 
-class ProductAdapter(var products: MutableList<Product>) :
-    RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
+class ProductAdapter(var products: MutableList<Product>) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
+
+    private lateinit var mListener: onItemClickListener
+
+    interface onItemClickListener {
+        fun onItemClick(productName: String, productUnit: Int)
+    }
+
+    fun setOnItemClickListener(listener: onItemClickListener){
+        mListener = listener
+    }
 
     //The context refers to the ui parent so to speak
     private lateinit var context: Context
@@ -23,16 +32,24 @@ class ProductAdapter(var products: MutableList<Product>) :
 //    private lateinit var binding: RecyclerView
     private lateinit var binding: ShoppingItemBinding
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View, listener: onItemClickListener) : RecyclerView.ViewHolder(itemView) {
         fun bindItems(product: Product) {
             itemView.textViewNameeeeee.text = product.name.toString()
             itemView.textViewQuantity.text = product.units.toString()
 
-            itemView.setOnClickListener{
-                val snack = Snackbar.make(it,product.name.toString(),Snackbar.LENGTH_LONG)
-                snack.show()
+//            itemView.setOnClickListener{
+//                val snack = Snackbar.make(it,product.name.toString(),Snackbar.LENGTH_LONG)
+//                snack.show()
+//            }
+        }
+        init {
+            itemView.setOnClickListener {
+                val product = products[adapterPosition]
+                listener.onItemClick(product.name.toString(), product.units)
             }
         }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductAdapter.ViewHolder {
@@ -41,7 +58,7 @@ class ProductAdapter(var products: MutableList<Product>) :
         context = parent.context
         binding = ShoppingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return ProductAdapter(products).ViewHolder(itemView = v)
+        return ProductAdapter(products).ViewHolder(itemView = v, mListener)
 
     }
 

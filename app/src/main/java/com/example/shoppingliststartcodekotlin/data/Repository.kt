@@ -17,15 +17,18 @@ object Repository {
     private var nameListener = MutableLiveData<String>()
 
     private val db = Firebase.firestore
-    private lateinit var auth: FirebaseAuth
+    private var auth = Firebase.auth
     private val user = db.collection("Users")
-    private val docRef = db.collection("Lists").document("rema")
+//    private val docRef = db.collection("Lists").document("rema")
+    private val loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists").document("list")
+
+    fun changeProduct(productName: String, productUnit: Int){
+        loggedInUser.update(productName, productUnit + 1)
+        productListener.value = products
+    }
 
     fun getData(): MutableLiveData<MutableList<Product>> {
 //        if (products.isEmpty())
-            auth = Firebase.auth
-            val loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists").document("list")
-
             loggedInUser.addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Log.w("TAG", "Listen failed.", e)
@@ -83,7 +86,7 @@ object Repository {
 
     fun addProduct(productName: String, quantity: Int = 1) {
         val newProduct = hashMapOf(productName to quantity)
-        docRef.set(newProduct, SetOptions.merge())
+        loggedInUser.set(newProduct, SetOptions.merge())
             .addOnSuccessListener { Log.d("TAG", "DocumentSnapshot successfully written!") }
             .addOnFailureListener { e -> Log.w("TAG", "Error writing document", e) }
         productListener.value = products
@@ -93,7 +96,7 @@ object Repository {
         val updates = hashMapOf<String, Any>(
             productName to FieldValue.delete()
         )
-        docRef.update(updates).addOnCompleteListener { }
+        loggedInUser.update(updates).addOnCompleteListener { }
         productListener.value = products
     }
 
@@ -102,10 +105,10 @@ object Repository {
     }
 
     fun clearList() {
-        docRef.get().addOnSuccessListener { hej ->
+        loggedInUser.get().addOnSuccessListener { hej ->
             hej.data?.forEach {
-            Log.d("TAG", hej.data.toString())
-                docRef.update(it.key.toString(), FieldValue.delete()).addOnCompleteListener{
+//            Log.d("TAG", hej.data.toString())
+                loggedInUser.update(it.key.toString(), FieldValue.delete()).addOnCompleteListener{
                     productListener.value = products
                 }
             }

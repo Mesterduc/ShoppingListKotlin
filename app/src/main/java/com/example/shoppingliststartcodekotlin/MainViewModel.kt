@@ -37,6 +37,9 @@ class MainViewModel : ViewModel() {
     fun getProductAt(position: Int): Product {
         return Repository.getProductAt(position)
     }
+    fun changeProduct(productName: String, productUnit: Int){
+        Repository.changeProduct(productName, productUnit)
+    }
 
     fun clearList() {
         Repository.clearList()
