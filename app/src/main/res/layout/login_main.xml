@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <TextView
         android:id="@+id/loginTextHeader"
@@ -29,13 +30,15 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         >
+
         <EditText
             android:id="@+id/loginEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textEmailAddress"
             android:hint="@string/login_email"
+            android:inputType="textEmailAddress"
+            android:minHeight="48dp"
             tools:layout_editor_absoluteX="105dp"
             tools:layout_editor_absoluteY="250dp" />
 
@@ -43,11 +46,18 @@
             android:id="@+id/loginPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/login_password"
             android:ems="10"
+            android:hint="@string/login_password"
             android:inputType="textPassword"
+            android:minHeight="48dp"
             tools:layout_editor_absoluteX="107dp"
             tools:layout_editor_absoluteY="347dp" />
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_button"
+            />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

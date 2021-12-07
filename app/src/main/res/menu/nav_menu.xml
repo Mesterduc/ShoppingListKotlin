@@ -5,9 +5,13 @@
         android:title="Settings"
         />
     <item
-        android:id="@+id/nav_deleteList"
-        android:title="Delete List"
+        android:id="@+id/nav_logout"
+        android:title="Logout"
         />
+<!--    <item-->
+<!--        android:id="@+id/nav_deleteList"-->
+<!--        android:title="Delete List"-->
+<!--        />-->
     <item
         android:id="@+id/nav_clearList"
         android:title="Clear List"

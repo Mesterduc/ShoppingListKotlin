@@ -7,4 +7,5 @@
     <string name="login_header">Welcome to Listzr</string>
     <string name="login_email">E-mail</string>
     <string name="login_password">Password</string>
+    <string name="login_button">Login</string>
 </resources>

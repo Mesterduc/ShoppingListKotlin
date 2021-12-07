@@ -1,8 +1,5 @@
 package com.example.shoppingliststartcodekotlin
 
-import android.util.Log
-import android.view.View
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.shoppingliststartcodekotlin.data.Product
@@ -14,6 +11,10 @@ class MainViewModel : ViewModel() {
 
     fun getData(): MutableLiveData<MutableList<Product>> {
         return Repository.getData()
+    }
+
+    fun getCurrentUser(userId: String): String {
+        return Repository.getCurrentUser(userId)
     }
 
     fun add(productName: String, quantity: Int = 1) {

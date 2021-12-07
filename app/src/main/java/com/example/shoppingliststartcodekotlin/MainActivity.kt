@@ -12,6 +12,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavDeepLinkBuilder
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,11 +23,17 @@ import com.example.shoppingliststartcodekotlin.data.Product
 import com.example.shoppingliststartcodekotlin.data.Repository
 import com.example.shoppingliststartcodekotlin.databinding.ActivityMainBinding
 import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
+import com.example.shoppingliststartcodekotlin.login.LoginActivity
 import com.example.shoppingliststartcodekotlin.settings.SettingsActivity
 import com.example.shoppingliststartcodekotlin.settings.SettingsHandler
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.view.*
+import android.app.PendingIntent
+import android.app.PendingIntent.CanceledException
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,20 +41,30 @@ class MainActivity : AppCompatActivity() {
     lateinit var adapter: ProductAdapter
     lateinit var binding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
+    private lateinit var auth: FirebaseAuth
     private val RESULT_CODE_PREFERENCES = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // auth
+        auth = Firebase.auth
+
+        // view binding
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        // set background color
         view.setBackgroundColor(Color.parseColor(SettingsHandler.getColor(this)))
+
+
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewModel.getData().observe(this, Observer {
             updateUI(it)
         })
 
+        // bind view elements
         binding.addProductButton.setOnClickListener {
             val name = binding.productName.text
             val units = binding.productUnits.text
@@ -78,6 +97,30 @@ class MainActivity : AppCompatActivity() {
             Log.d("Products", "Found products")
         }
 
+
+        // Logged in?
+        val currentUser = auth.currentUser
+        if(currentUser == null){
+            var intent = Intent(this@MainActivity, LoginActivity::class.java)
+            startActivity(intent)
+//                val pendingIntent = NavDeepLinkBuilder(this.applicationContext)
+//                    .setGraph(R.navigation.navigation_main_to_login)
+//                    .setDestination(R.id.loginActivity)
+//                    .createPendingIntent()
+//            try {
+//                pendingIntent.send()
+//            } catch (e: CanceledException) {
+//                e.printStackTrace()
+//            }
+//                findNavController().navigate(action)
+
+        }else{
+            var user = viewModel.getCurrentUser(currentUser?.uid.toString())
+            Toast.makeText(this, "Welcome ${user}",
+            Toast.LENGTH_SHORT).show()
+        }
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -90,6 +133,11 @@ class MainActivity : AppCompatActivity() {
             toast.show()
             binding.root.setBackgroundColor(Color.parseColor(color.toString()))
         }
+        val currentUser = auth.currentUser
+//        if(currentUser != null){
+            Toast.makeText(this, "Welcome ${currentUser?.uid.toString()}",
+                Toast.LENGTH_SHORT).show()
+//        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -151,18 +199,20 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.nav_clearList -> clearListAlert()
             R.id.nav_share -> shareList()
-//            R.id.nav_settings -> {
-//                val intent = Intent(this, SettingsActivity::class.java)
-//                startActivityForResult(intent, RESULT_CODE_PREFERENCES)
-//            }
+            R.id.nav_settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivityForResult(intent, RESULT_CODE_PREFERENCES)
+            }
+            R.id.nav_logout -> {
+                Firebase.auth.signOut()
+                var intent = Intent(this@MainActivity, LoginActivity::class.java)
+                startActivity(intent)
+            }
         }
-        if (item.itemId == R.id.nav_settings) {
-            //Start our settingsactivity and listen to result - i.e.
-            //when it is finished.
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivityForResult(intent, RESULT_CODE_PREFERENCES)
-
-        }
+//        if (item.itemId == R.id.nav_settings) {
+//            val intent = Intent(this, SettingsActivity::class.java)
+//            startActivityForResult(intent, RESULT_CODE_PREFERENCES)
+//        }
 
         return super.onOptionsItemSelected(item)
     }

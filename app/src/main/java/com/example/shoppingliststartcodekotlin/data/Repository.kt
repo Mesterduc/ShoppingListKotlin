@@ -13,6 +13,7 @@ object Repository {
     //listener to changes that we can then use in the Activity
     private var productListener = MutableLiveData<MutableList<Product>>()
     private val db = Firebase.firestore
+    private val user = db.collection("Users")
     private val docRef = db.collection("Lists").document("rema")
 
     fun getData(): MutableLiveData<MutableList<Product>> {
@@ -35,6 +36,24 @@ object Repository {
                 }
             }
         return productListener
+    }
+    fun getCurrentUser(userId: String): String{
+        var name = ""
+
+        user.get().addOnSuccessListener { users ->
+//            Log.d("TAG", users.g)
+            users.forEach{
+            Log.d("TAG", userId)
+                Log.d("TAG", it.id.toString())
+                if( it.id.toString() == userId.toString()){
+                    Log.d("TAG", it.getString("User").toString())
+                    name = it.getString("User").toString()
+
+                }
+            }
+
+        }
+        return name
     }
 
     fun addProduct(productName: String, quantity: Int = 1) {
