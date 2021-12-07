@@ -87,37 +87,31 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        binding.productNameBtn.setOnClickListener{
+        binding.productNameBtn.setOnClickListener {
             viewModel.sortByName()
-            Log.d("Products", "Found products")
         }
 
-        binding.productUnitsBtn.setOnClickListener{
+        binding.productUnitsBtn.setOnClickListener {
             viewModel.sortByUnits()
-            Log.d("Products", "Found products")
         }
 
 
         // Logged in?
         val currentUser = auth.currentUser
-        if(currentUser == null){
+        if (currentUser == null) {
             var intent = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intent)
-//                val pendingIntent = NavDeepLinkBuilder(this.applicationContext)
-//                    .setGraph(R.navigation.navigation_main_to_login)
-//                    .setDestination(R.id.loginActivity)
-//                    .createPendingIntent()
-//            try {
-//                pendingIntent.send()
-//            } catch (e: CanceledException) {
-//                e.printStackTrace()
-//            }
-//                findNavController().navigate(action)
 
-        }else{
-            var user = viewModel.getCurrentUser(currentUser?.uid.toString())
-            Toast.makeText(this, "Welcome ${user}",
-            Toast.LENGTH_SHORT).show()
+        } else {
+//            viewModel.getCurrentUserName(currentUser?.uid.toString())
+//            val nameObserver = Observer<String> { newName ->
+//                // Update the UI, in this case, a TextView.
+//                Log.d("TAG", newName)
+//                binding.addProductButton.text = newName.toString()
+//            }
+//            viewModel.currentName.observe(this, nameObserver)
+//
+
         }
 
 
@@ -133,10 +127,12 @@ class MainActivity : AppCompatActivity() {
             toast.show()
             binding.root.setBackgroundColor(Color.parseColor(color.toString()))
         }
-        val currentUser = auth.currentUser
+//        val currentUser = auth.currentUser
 //        if(currentUser != null){
-            Toast.makeText(this, "Welcome ${currentUser?.uid.toString()}",
-                Toast.LENGTH_SHORT).show()
+//        Toast.makeText(
+//            this, "Welcome ${currentUser?.uid.toString()}",
+//            Toast.LENGTH_SHORT
+//        ).show()
 //        }
         super.onActivityResult(requestCode, resultCode, data)
     }

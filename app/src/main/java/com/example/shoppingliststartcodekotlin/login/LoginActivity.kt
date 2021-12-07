@@ -16,60 +16,48 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class LoginActivity : Fragment() {
+class LoginActivity : AppCompatActivity() {
     lateinit var binding: LoginMainBinding
     private lateinit var auth: FirebaseAuth
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-//        super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
+        binding = LoginMainBinding.inflate(layoutInflater)
         auth = Firebase.auth
-
 //        binding = LoginMainBinding.inflate(layoutInflater)
         val view = binding.root
-        val binding =
-            inflater.inflate(R.layout.login_main, container, false)
-//        setContentView(view)
+        setContentView(view)
 
-
-
-        return binding
-    }
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        binding.buttonHome.setOnClickListener{
-//            val action = HomeFragmentDirections.actionNavAccountToNavAbout("hello")
-//            findNavController().navigate(action)
-//        }
-//        val button: Button = root.findViewById(R.id.loginButton)
         binding.loginButton.setOnClickListener {
             var email = binding.loginEmail.text.toString()
             var password = binding.loginPassword.text.toString()
             auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(requireActivity()) { task ->
+                .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("TAG", "signInWithEmail:success")
                         val user = auth.currentUser
-                        Toast.makeText(
-                            activity, "Welcome ${user?.uid.toString()}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-//                        finish()
+//                        Toast.makeText(
+//                            this, "Welcome ${user?. .uid.toString()}",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+                        finish()
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("TAG", "signInWithEmail:failure", task.exception)
                         Toast.makeText(
-                            activity, "Authentication failed.",
+                            this, "Authentication failed.",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
         }
-
-        super.onActivityCreated(savedInstanceState)
     }
+
+    override fun onBackPressed() {
+//        super.onBackPressed()
+
+    }
+
 }

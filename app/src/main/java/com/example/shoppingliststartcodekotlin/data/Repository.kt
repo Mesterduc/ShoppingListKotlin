@@ -2,6 +2,8 @@ package com.example.shoppingliststartcodekotlin.data
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -12,12 +14,18 @@ object Repository {
 
     //listener to changes that we can then use in the Activity
     private var productListener = MutableLiveData<MutableList<Product>>()
+    private var nameListener = MutableLiveData<String>()
+
     private val db = Firebase.firestore
+    private lateinit var auth: FirebaseAuth
     private val user = db.collection("Users")
     private val docRef = db.collection("Lists").document("rema")
 
     fun getData(): MutableLiveData<MutableList<Product>> {
         if (products.isEmpty())
+            auth = Firebase.auth
+            val loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists").document("list")
+
             docRef.addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Log.w("TAG", "Listen failed.", e)
@@ -37,24 +45,43 @@ object Repository {
             }
         return productListener
     }
-    fun getCurrentUser(userId: String): String{
-        var name = ""
 
-        user.get().addOnSuccessListener { users ->
-//            Log.d("TAG", users.g)
-            users.forEach{
-            Log.d("TAG", userId)
-                Log.d("TAG", it.id.toString())
-                if( it.id.toString() == userId.toString()){
-                    Log.d("TAG", it.getString("User").toString())
-                    name = it.getString("User").toString()
+//    fun getCurrentUserName(userId: String): MutableLiveData<String>{
+//        user.get().addOnSuccessListener { users ->
+////            Log.d("TAG", users.g)
+//            users.forEach{
+////                Log.d("TAG", userId)
+////                Log.d("TAG", it.id.toString())
+//                if( it.id.toString() == userId.toString()){
+//                    Log.d("TAG", it.getString("User").toString())
+//                    nameListener.value = it.getString("User").toString()
+//
+//
+//                }
+//            }
+//
+//        }
+//        return nameListener
+//    }
 
-                }
-            }
-
-        }
-        return name
-    }
+//    fun getCurrentUser(userId: String): String{
+//        var name = ""
+//
+//        user.get().addOnSuccessListener { users ->
+////            Log.d("TAG", users.g)
+//            users.forEach{
+//            Log.d("TAG", userId)
+//                Log.d("TAG", it.id.toString())
+//                if( it.id.toString() == userId.toString()){
+//                    Log.d("TAG", it.getString("User").toString())
+//                    name = it.getString("User").toString()
+//
+//                }
+//            }
+//
+//        }
+//        return name
+//    }
 
     fun addProduct(productName: String, quantity: Int = 1) {
         val newProduct = hashMapOf(productName to quantity)

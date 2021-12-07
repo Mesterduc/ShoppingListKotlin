@@ -46,12 +46,10 @@ class ProductAdapter(var products: MutableList<Product>) :
     }
 
     override fun onBindViewHolder(holder: ProductAdapter.ViewHolder, position: Int) {
-//        TODO("Not yet implemented")
         holder.bindItems(products[position])
     }
 
     override fun getItemCount(): Int {
-//        TODO("Not yet implemented")
          return products.size
     }
 
