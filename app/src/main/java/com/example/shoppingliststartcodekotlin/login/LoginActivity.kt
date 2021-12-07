@@ -1,16 +1,11 @@
 package com.example.shoppingliststartcodekotlin.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.shoppingliststartcodekotlin.R
+import com.example.shoppingliststartcodekotlin.MainActivity
 import com.example.shoppingliststartcodekotlin.databinding.LoginMainBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -19,6 +14,7 @@ import com.google.firebase.ktx.Firebase
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: LoginMainBinding
     private lateinit var auth: FirebaseAuth
+    lateinit var viewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +33,16 @@ class LoginActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d("TAG", "signInWithEmail:success")
-                        val user = auth.currentUser
+//                        val user = auth.currentUser
 //                        Toast.makeText(
 //                            this, "Welcome ${user?. .uid.toString()}",
 //                            Toast.LENGTH_SHORT
 //                        ).show()
+//                        startActivity(getIntent())
+
                         finish()
+                        var intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        startActivity(intent)
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w("TAG", "signInWithEmail:failure", task.exception)

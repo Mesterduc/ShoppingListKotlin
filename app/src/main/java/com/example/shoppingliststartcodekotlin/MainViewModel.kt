@@ -9,9 +9,9 @@ import com.example.shoppingliststartcodekotlin.data.Repository
 class MainViewModel : ViewModel() {
     var isProductSorted = false
     var isUnitSorted = false
-    val currentName: MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
-    }
+//    val currentName: MutableLiveData<String> by lazy {
+//        MutableLiveData<String>()
+//    }
 
     fun getData(): MutableLiveData<MutableList<Product>> {
         return Repository.getData()

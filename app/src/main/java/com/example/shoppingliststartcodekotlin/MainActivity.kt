@@ -103,14 +103,10 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
 
         } else {
-//            viewModel.getCurrentUserName(currentUser?.uid.toString())
-//            val nameObserver = Observer<String> { newName ->
-//                // Update the UI, in this case, a TextView.
-//                Log.d("TAG", newName)
-//                binding.addProductButton.text = newName.toString()
-//            }
-//            viewModel.currentName.observe(this, nameObserver)
-//
+            Toast.makeText(
+                this, "Welcome",
+                Toast.LENGTH_SHORT
+            ).show()
 
         }
 
@@ -127,13 +123,7 @@ class MainActivity : AppCompatActivity() {
             toast.show()
             binding.root.setBackgroundColor(Color.parseColor(color.toString()))
         }
-//        val currentUser = auth.currentUser
-//        if(currentUser != null){
-//        Toast.makeText(
-//            this, "Welcome ${currentUser?.uid.toString()}",
-//            Toast.LENGTH_SHORT
-//        ).show()
-//        }
+
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -142,10 +132,6 @@ class MainActivity : AppCompatActivity() {
 //        val layoutManager = LinearLayoutManager(this)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-
-        /*you need to have a defined a recylerView in your
-        xml file - in this case the id of the recyclerview should
-        be "recyclerView" - as the code line below uses that */
 
 //        binding.recyclerView.layoutManager = layoutManager
 
@@ -184,6 +170,7 @@ class MainActivity : AppCompatActivity() {
         /*connecting the recyclerview to the adapter  */
         binding.recyclerView.adapter = adapter
 
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -205,11 +192,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-//        if (item.itemId == R.id.nav_settings) {
-//            val intent = Intent(this, SettingsActivity::class.java)
-//            startActivityForResult(intent, RESULT_CODE_PREFERENCES)
-//        }
-
         return super.onOptionsItemSelected(item)
     }
 

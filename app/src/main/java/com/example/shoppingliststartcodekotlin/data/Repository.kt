@@ -22,11 +22,11 @@ object Repository {
     private val docRef = db.collection("Lists").document("rema")
 
     fun getData(): MutableLiveData<MutableList<Product>> {
-        if (products.isEmpty())
+//        if (products.isEmpty())
             auth = Firebase.auth
             val loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists").document("list")
 
-            docRef.addSnapshotListener { snapshot, e ->
+            loggedInUser.addSnapshotListener { snapshot, e ->
                 if (e != null) {
                     Log.w("TAG", "Listen failed.", e)
                     return@addSnapshotListener
@@ -34,11 +34,9 @@ object Repository {
                 if (snapshot != null && snapshot.exists()) {
                     products.clear()
                     snapshot.data?.forEach {
-//                        Log.d("TAG", "${it.key} + ${it.value}")
                         products.add(Product(it.key, it.value.toString().toInt()))
                         productListener.value = products
                     }
-//                    val data = snapshot.get("list") as Map<String, Int>
                 } else {
                     Log.d("TAG", "Current data: null")
                 }
