@@ -2,6 +2,7 @@ package com.example.shoppingliststartcodekotlin.data
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.common.server.response.FastJsonResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
@@ -19,31 +20,57 @@ object Repository {
     private val db = Firebase.firestore
     private var auth = Firebase.auth
     private val user = db.collection("Users")
-//    private val docRef = db.collection("Lists").document("rema")
-    private val loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists").document("list")
 
-    fun changeProduct(productName: String, productUnit: Int){
-        loggedInUser.update(productName, productUnit + 1)
-        productListener.value = products
+    //    private val docRef = db.collection("Lists").document("rema")
+    private val loggedInUser =
+        user.document(auth.currentUser?.uid.toString()).collection("Lists")
+
+    fun changeProduct(oldName: String, productName: String, productUnit: Int) {
+        val newProduct = hashMapOf(
+            productName to productUnit
+        )
+        loggedInUser.document(oldName).delete()
+            .addOnSuccessListener {
+                loggedInUser.document(productName).set(newProduct)
+                productListener.value = products
+            }
     }
 
     fun getData(): MutableLiveData<MutableList<Product>> {
 //        if (products.isEmpty())
-            loggedInUser.addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    Log.w("TAG", "Listen failed.", e)
-                    return@addSnapshotListener
-                }
-                if (snapshot != null && snapshot.exists()) {
-                    products.clear()
-                    snapshot.data?.forEach {
-                        products.add(Product(it.key, it.value.toString().toInt()))
-                        productListener.value = products
-                    }
-                } else {
-                    Log.d("TAG", "Current data: null")
-                }
+        loggedInUser.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w("TAG", "Listen failed.", e)
+                return@addSnapshotListener
             }
+            if (snapshot != null) {
+                products.clear()
+                snapshot.documents.forEach {
+                    it.data?.forEach {
+                        products.add(Product(it.key.toString(), it.value.toString().toInt()))
+                        productListener.value = products
+
+                    }
+
+                }
+//                snapshot.data?.forEach {
+//                    Log.w("TAG", it.key.toString(), e)
+//                    products.add(Product(it.key, it.value.toString().toInt()))
+//                    productListener.value = products
+//                }
+//                val items = snapshot.data?.get("items") as Map<String, Int>
+//                if (items != null) {
+//                    items.forEach {
+//                        if (it != null) {
+//                            products.add(Product(it.key, it.value.toString().toInt()))
+//                            productListener.value = products
+//                        }
+//                    }
+//                }
+            } else {
+                Log.d("TAG", "Current data: null")
+            }
+        }
         return productListener
     }
 
@@ -86,17 +113,14 @@ object Repository {
 
     fun addProduct(productName: String, quantity: Int = 1) {
         val newProduct = hashMapOf(productName to quantity)
-        loggedInUser.set(newProduct, SetOptions.merge())
+        loggedInUser.document(productName).set(newProduct)
             .addOnSuccessListener { Log.d("TAG", "DocumentSnapshot successfully written!") }
             .addOnFailureListener { e -> Log.w("TAG", "Error writing document", e) }
         productListener.value = products
     }
 
     fun deleteProductAt(productName: String) {
-        val updates = hashMapOf<String, Any>(
-            productName to FieldValue.delete()
-        )
-        loggedInUser.update(updates).addOnCompleteListener { }
+        loggedInUser.document(productName).delete().addOnCompleteListener { }
         productListener.value = products
     }
 
@@ -106,10 +130,13 @@ object Repository {
 
     fun clearList() {
         loggedInUser.get().addOnSuccessListener { hej ->
-            hej.data?.forEach {
-//            Log.d("TAG", hej.data.toString())
-                loggedInUser.update(it.key.toString(), FieldValue.delete()).addOnCompleteListener{
-                    productListener.value = products
+            hej.documents?.forEach {
+                it.data?.keys?.forEach {
+                    loggedInUser.document(it.toString()).delete()
+                        .addOnCompleteListener {
+                            Log.d("TAG", "Cleared the list")
+                            productListener.value = products
+                        }
                 }
             }
         }
@@ -119,13 +146,13 @@ object Repository {
         return products
     }
 
-    fun sortByName(sorted: Boolean){
-        if (sorted)  products.sortBy { it.name } else products.sortByDescending { it.name }
+    fun sortByName(sorted: Boolean) {
+        if (sorted) products.sortBy { it.name } else products.sortByDescending { it.name }
         productListener.value = products
     }
 
-    fun sortByUnits(sorted: Boolean){
-        if (sorted)  products.sortBy { it.units } else products.sortByDescending { it.units }
+    fun sortByUnits(sorted: Boolean) {
+        if (sorted) products.sortBy { it.units } else products.sortByDescending { it.units }
         productListener.value = products
     }
 

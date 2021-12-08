@@ -33,6 +33,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.view.*
 import android.app.PendingIntent
 import android.app.PendingIntent.CanceledException
+import android.view.View
 
 
 class MainActivity : AppCompatActivity() {
@@ -95,8 +96,6 @@ class MainActivity : AppCompatActivity() {
             viewModel.sortByUnits()
         }
 
-
-
         // Logged in?
         val currentUser = auth.currentUser
         if (currentUser == null) {
@@ -127,6 +126,9 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    private fun changeProduct(oldName:String, name: String, unit: Int) {
+        viewModel.changeProduct(oldName, name, unit)
+    }
 
     fun updateUI(products: MutableList<Product>) {
         binding.recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -134,9 +136,12 @@ class MainActivity : AppCompatActivity() {
         adapter = ProductAdapter(products)
         adapter.setOnItemClickListener(object : ProductAdapter.onItemClickListener{
             override fun onItemClick(productName: String, productUnit: Int) {
-                viewModel.changeProduct(productName, productUnit)
-                val toast = Toast.makeText(this@MainActivity, productName, Toast.LENGTH_SHORT)
-                toast.show()
+//                viewModel.changeProduct(productName, productUnit)
+//                val toast = Toast.makeText(this@MainActivity, productName, Toast.LENGTH_SHORT)
+//                toast.show()
+                val dialog = Dialog(oldName = productName, ::changeProduct)
+                dialog.show(supportFragmentManager, "dialogFragment")
+
             }
         })
 
