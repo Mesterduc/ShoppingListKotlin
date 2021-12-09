@@ -53,7 +53,6 @@ class ProductAdapter(var products: MutableList<Product>) : RecyclerView.Adapter<
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductAdapter.ViewHolder {
-//        TODO("Not yet implemented")
         val v = LayoutInflater.from(parent.context).inflate(R.layout.shopping_item, parent, false)
         context = parent.context
         binding = ShoppingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)

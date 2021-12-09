@@ -2,10 +2,12 @@ package com.example.shoppingliststartcodekotlin.data
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.shoppingliststartcodekotlin.MainActivity
 import com.google.android.gms.common.server.response.FastJsonResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -18,12 +20,11 @@ object Repository {
     private var nameListener = MutableLiveData<String>()
 
     private val db = Firebase.firestore
-    private var auth = Firebase.auth
+    private val auth = Firebase.auth
     private val user = db.collection("Users")
+    private var loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists")
 
-    //    private val docRef = db.collection("Lists").document("rema")
-    private val loggedInUser =
-        user.document(auth.currentUser?.uid.toString()).collection("Lists")
+
 
     fun changeProduct(oldName: String, productName: String, productUnit: Int) {
         val newProduct = hashMapOf(
@@ -38,6 +39,8 @@ object Repository {
 
     fun getData(): MutableLiveData<MutableList<Product>> {
 //        if (products.isEmpty())
+        loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists")
+
         loggedInUser.addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w("TAG", "Listen failed.", e)
@@ -71,6 +74,8 @@ object Repository {
                 Log.d("TAG", "Current data: null")
             }
         }
+
+
         return productListener
     }
 

@@ -21,7 +21,6 @@ class LoginActivity : AppCompatActivity() {
 
         binding = LoginMainBinding.inflate(layoutInflater)
         auth = Firebase.auth
-//        binding = LoginMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
@@ -31,16 +30,7 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
                         Log.d("TAG", "signInWithEmail:success")
-//                        val user = auth.currentUser
-//                        Toast.makeText(
-//                            this, "Welcome ${user?. .uid.toString()}",
-//                            Toast.LENGTH_SHORT
-//                        ).show()
-//                        startActivity(getIntent())
-
-                        finish()
                         var intent = Intent(this@LoginActivity, MainActivity::class.java)
                         startActivity(intent)
                     } else {

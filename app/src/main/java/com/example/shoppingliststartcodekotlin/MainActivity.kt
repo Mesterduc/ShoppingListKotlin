@@ -58,12 +58,8 @@ class MainActivity : AppCompatActivity() {
         // set background color
         view.setBackgroundColor(Color.parseColor(SettingsHandler.getColor(this)))
 
-
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-        viewModel.getData().observe(this, Observer {
-            updateUI(it)
-        })
 
         // bind view elements
         binding.addProductButton.setOnClickListener {
@@ -96,12 +92,16 @@ class MainActivity : AppCompatActivity() {
             viewModel.sortByUnits()
         }
 
-        // Logged in?
         val currentUser = auth.currentUser
+
         if (currentUser == null) {
             var intent = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intent)
         } else {
+            viewModel.getData().observe(this, Observer {
+                updateUI(it)
+            })
+
             Toast.makeText(
                 this, "Welcome",
                 Toast.LENGTH_SHORT
@@ -120,13 +120,12 @@ class MainActivity : AppCompatActivity() {
             val message = "Background color code is: $color"
             val toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
             toast.show()
-            binding.root.setBackgroundColor(Color.parseColor(color.toString()))
         }
 
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun changeProduct(oldName:String, name: String, unit: Int) {
+    private fun changeProduct(oldName: String, name: String, unit: Int) {
         viewModel.changeProduct(oldName, name, unit)
     }
 
@@ -134,14 +133,10 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
         adapter = ProductAdapter(products)
-        adapter.setOnItemClickListener(object : ProductAdapter.onItemClickListener{
+        adapter.setOnItemClickListener(object : ProductAdapter.onItemClickListener {
             override fun onItemClick(productName: String, productUnit: Int) {
-//                viewModel.changeProduct(productName, productUnit)
-//                val toast = Toast.makeText(this@MainActivity, productName, Toast.LENGTH_SHORT)
-//                toast.show()
                 val dialog = Dialog(oldName = productName, ::changeProduct)
                 dialog.show(supportFragmentManager, "dialogFragment")
-
             }
         })
 
@@ -163,7 +158,7 @@ class MainActivity : AppCompatActivity() {
 
                     Snackbar.make(
                         binding.root, // The ID of your coordinator_layout
-                        "undo?",
+                        "Do you want to undo the delete?",
                         Snackbar.LENGTH_LONG
                     ).apply {
                         setAction("UNDO") {
