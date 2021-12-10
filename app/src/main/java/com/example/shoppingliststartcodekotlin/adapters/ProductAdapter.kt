@@ -15,12 +15,14 @@ import com.google.android.material.snackbar.Snackbar
 
 class ProductAdapter(var products: MutableList<Product>) : RecyclerView.Adapter<ProductAdapter.ViewHolder>() {
 
+    // late var for the interface
     private lateinit var mListener: onItemClickListener
 
     interface onItemClickListener {
         fun onItemClick(productName: String, productUnit: Int)
     }
 
+    // setting the mListener
     fun setOnItemClickListener(listener: onItemClickListener){
         mListener = listener
     }
@@ -28,16 +30,17 @@ class ProductAdapter(var products: MutableList<Product>) : RecyclerView.Adapter<
     //The context refers to the ui parent so to speak
     private lateinit var context: Context
 
-    //This is a set of the items we have in our collection
-//    private lateinit var binding: RecyclerView
     private lateinit var binding: ShoppingItemBinding
 
+    // product itemview
     inner class ViewHolder(itemView: View, listener: onItemClickListener) : RecyclerView.ViewHolder(itemView) {
         fun bindItems(product: Product) {
             itemView.textViewNameeeeee.text = product.name.toString()
             itemView.textViewQuantity.text = product.units.toString()
         }
+        // runs on every product
         init {
+            // gets data for the product you clikced on
             itemView.setOnClickListener {
                 val product = products[adapterPosition]
                 listener.onItemClick(product.name.toString(), product.units)
@@ -52,6 +55,7 @@ class ProductAdapter(var products: MutableList<Product>) : RecyclerView.Adapter<
         context = parent.context
         binding = ShoppingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
+        // return the adapter and our viewHolder with the view and data
         return ProductAdapter(products).ViewHolder(itemView = v, mListener)
 
     }

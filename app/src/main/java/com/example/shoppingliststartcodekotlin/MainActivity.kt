@@ -82,11 +82,13 @@ class MainActivity : AppCompatActivity() {
             viewModel.sortByUnits()
         }
 
+        // are we logged in
         val currentUser = auth.currentUser
         if (currentUser == null) {
             val intent = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intent)
         } else {
+            // observe data
             viewModel.getData().observe(this, Observer {
                 updateUI(it)
             })
@@ -111,14 +113,16 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    // callback from dialog
     private fun changeProduct(oldName: String, name: String, unit: Int) {
         viewModel.changeProduct(oldName, name, unit)
     }
 
     fun updateUI(products: MutableList<Product>) {
         binding.recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-
         adapter = ProductAdapter(products)
+
+        // event listener for edit product
         adapter.setOnItemClickListener(object : ProductAdapter.onItemClickListener {
             override fun onItemClick(productName: String, productUnit: Int) {
                 val dialog = Dialog(oldName = productName, oldUnit = productUnit, ::changeProduct)
@@ -126,7 +130,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // swipe to delete
+        // swipe to delete. overrider ItemTouchHelper funktioner
         val itemTouchHelperCallback =
             object :
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
@@ -139,6 +143,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    // gemmer data så man kan genskabe det slettet data
                     val product = viewModel.getProductAt(viewHolder.adapterPosition)
                     viewModel.deleteItemAt(product.name)
 
@@ -210,8 +215,7 @@ class MainActivity : AppCompatActivity() {
         alert.show()
     }
 
-    override fun onBackPressed() {
-//        super.onBackPressed()
-    }
+    // stops the back button in this view
+    override fun onBackPressed() {}
 
 }

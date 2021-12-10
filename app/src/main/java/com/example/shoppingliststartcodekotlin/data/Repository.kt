@@ -17,14 +17,13 @@ object Repository {
 
     //listener to changes that we can then use in the Activity
     private var productListener = MutableLiveData<MutableList<Product>>()
-    private var nameListener = MutableLiveData<String>()
 
     private val db = Firebase.firestore
     private val auth = Firebase.auth
     private val user = db.collection("Users")
     private var loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists")
 
-
+    // change product by deleting the old and creating a new
     fun changeProduct(oldName: String, productName: String, productUnit: Int) {
         val newProduct = hashMapOf(
             productName to productUnit
@@ -40,7 +39,7 @@ object Repository {
         loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists")
         loggedInUser.addSnapshotListener { snapshot, e ->
             if (e != null) {
-                Log.w("TAG", "Listen failed.", e)
+                Log.w("TAG1", "Listen failed.", e)
                 return@addSnapshotListener
             }
             if (snapshot != null) {
@@ -55,47 +54,8 @@ object Repository {
                 Log.d("TAG", "Current data: null")
             }
         }
-
-
         return productListener
     }
-
-//    fun getCurrentUserName(userId: String): MutableLiveData<String>{
-//        user.get().addOnSuccessListener { users ->
-////            Log.d("TAG", users.g)
-//            users.forEach{
-////                Log.d("TAG", userId)
-////                Log.d("TAG", it.id.toString())
-//                if( it.id.toString() == userId.toString()){
-//                    Log.d("TAG", it.getString("User").toString())
-//                    nameListener.value = it.getString("User").toString()
-//
-//
-//                }
-//            }
-//
-//        }
-//        return nameListener
-//    }
-
-//    fun getCurrentUser(userId: String): String{
-//        var name = ""
-//
-//        user.get().addOnSuccessListener { users ->
-////            Log.d("TAG", users.g)
-//            users.forEach{
-//            Log.d("TAG", userId)
-//                Log.d("TAG", it.id.toString())
-//                if( it.id.toString() == userId.toString()){
-//                    Log.d("TAG", it.getString("User").toString())
-//                    name = it.getString("User").toString()
-//
-//                }
-//            }
-//
-//        }
-//        return name
-//    }
 
     fun addProduct(productName: String, quantity: Int = 1) {
         val newProduct = hashMapOf(productName to quantity)
@@ -116,6 +76,7 @@ object Repository {
 
     fun clearList() {
         loggedInUser.get().addOnSuccessListener { hej ->
+            // need to loop all items to clear the recyclerview
             hej.documents?.forEach {
                 it.data?.keys?.forEach {
                     loggedInUser.document(it.toString()).delete()

@@ -18,8 +18,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = LoginMainBinding.inflate(layoutInflater)
         auth = Firebase.auth
+        binding = LoginMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
@@ -27,6 +27,7 @@ class LoginActivity : AppCompatActivity() {
             val email = binding.loginEmail.text
             val password = binding.loginPassword.text
             if (email.isNotEmpty() && password.isNotEmpty()) {
+                // tjek if the user exist
                 auth.signInWithEmailAndPassword(email.toString(), password.toString())
                     .addOnCompleteListener(this) { task ->
                         if (task.isSuccessful) {
