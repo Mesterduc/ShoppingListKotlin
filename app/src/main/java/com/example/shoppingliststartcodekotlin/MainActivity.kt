@@ -12,17 +12,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavDeepLink
-import androidx.navigation.NavDeepLinkBuilder
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingliststartcodekotlin.adapters.ProductAdapter
 import com.example.shoppingliststartcodekotlin.data.Product
-import com.example.shoppingliststartcodekotlin.data.Repository
 import com.example.shoppingliststartcodekotlin.databinding.ActivityMainBinding
-import com.example.shoppingliststartcodekotlin.databinding.ShoppingItemBinding
 import com.example.shoppingliststartcodekotlin.login.LoginActivity
 import com.example.shoppingliststartcodekotlin.settings.SettingsActivity
 import com.example.shoppingliststartcodekotlin.settings.SettingsHandler
@@ -31,9 +26,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.view.*
-import android.app.PendingIntent
-import android.app.PendingIntent.CanceledException
-import android.view.View
 
 
 class MainActivity : AppCompatActivity() {
@@ -57,6 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         // set background color
         view.setBackgroundColor(Color.parseColor(SettingsHandler.getColor(this)))
+//        view.setBackgroundColor(Color.WHITE)
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
@@ -66,10 +59,7 @@ class MainActivity : AppCompatActivity() {
             val name = binding.productName.text
             val units = binding.productUnits.text
             if (name.isNotEmpty() && units.isNotEmpty()) {
-                viewModel.add(
-                    name.toString(),
-                    units.toString().toInt()
-                )
+                viewModel.add(name.toString(), units.toString().toInt())
                 name.clear()
                 units.clear()
             } else if (name.isNotEmpty()) {
@@ -93,23 +83,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         val currentUser = auth.currentUser
-
         if (currentUser == null) {
-            var intent = Intent(this@MainActivity, LoginActivity::class.java)
+            val intent = Intent(this@MainActivity, LoginActivity::class.java)
             startActivity(intent)
         } else {
             viewModel.getData().observe(this, Observer {
                 updateUI(it)
             })
-
             Toast.makeText(
                 this, "Welcome",
                 Toast.LENGTH_SHORT
             ).show()
-
         }
-
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -120,6 +105,7 @@ class MainActivity : AppCompatActivity() {
             val message = "Background color code is: $color"
             val toast = Toast.makeText(this, message, Toast.LENGTH_LONG)
             toast.show()
+            binding.root.setBackgroundColor(Color.parseColor(SettingsHandler.getColor(this)))
         }
 
         super.onActivityResult(requestCode, resultCode, data)
@@ -135,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         adapter = ProductAdapter(products)
         adapter.setOnItemClickListener(object : ProductAdapter.onItemClickListener {
             override fun onItemClick(productName: String, productUnit: Int) {
-                val dialog = Dialog(oldName = productName, ::changeProduct)
+                val dialog = Dialog(oldName = productName, oldUnit = productUnit, ::changeProduct)
                 dialog.show(supportFragmentManager, "dialogFragment")
             }
         })
@@ -190,8 +176,8 @@ class MainActivity : AppCompatActivity() {
                 startActivityForResult(intent, RESULT_CODE_PREFERENCES)
             }
             R.id.nav_logout -> {
-                Firebase.auth.signOut()
-                var intent = Intent(this@MainActivity, LoginActivity::class.java)
+                auth.signOut()
+                val intent = Intent(this@MainActivity, LoginActivity::class.java)
                 startActivity(intent)
             }
         }
@@ -204,7 +190,6 @@ class MainActivity : AppCompatActivity() {
         products.forEach {
             productList += "${it.name} - ${it.units}, "
         }
-
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_SUBJECT, "Shared Data")
@@ -223,6 +208,10 @@ class MainActivity : AppCompatActivity() {
             viewModel.clearList()
         })
         alert.show()
+    }
+
+    override fun onBackPressed() {
+//        super.onBackPressed()
     }
 
 }

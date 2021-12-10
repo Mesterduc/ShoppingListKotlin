@@ -36,11 +36,6 @@ class ProductAdapter(var products: MutableList<Product>) : RecyclerView.Adapter<
         fun bindItems(product: Product) {
             itemView.textViewNameeeeee.text = product.name.toString()
             itemView.textViewQuantity.text = product.units.toString()
-
-//            itemView.setOnClickListener{
-//                val snack = Snackbar.make(it,product.name.toString(),Snackbar.LENGTH_LONG)
-//                snack.show()
-//            }
         }
         init {
             itemView.setOnClickListener {

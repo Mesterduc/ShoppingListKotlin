@@ -25,7 +25,6 @@ object Repository {
     private var loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists")
 
 
-
     fun changeProduct(oldName: String, productName: String, productUnit: Int) {
         val newProduct = hashMapOf(
             productName to productUnit
@@ -38,9 +37,7 @@ object Repository {
     }
 
     fun getData(): MutableLiveData<MutableList<Product>> {
-//        if (products.isEmpty())
         loggedInUser = user.document(auth.currentUser?.uid.toString()).collection("Lists")
-
         loggedInUser.addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w("TAG", "Listen failed.", e)
@@ -52,24 +49,8 @@ object Repository {
                     it.data?.forEach {
                         products.add(Product(it.key.toString(), it.value.toString().toInt()))
                         productListener.value = products
-
                     }
-
                 }
-//                snapshot.data?.forEach {
-//                    Log.w("TAG", it.key.toString(), e)
-//                    products.add(Product(it.key, it.value.toString().toInt()))
-//                    productListener.value = products
-//                }
-//                val items = snapshot.data?.get("items") as Map<String, Int>
-//                if (items != null) {
-//                    items.forEach {
-//                        if (it != null) {
-//                            products.add(Product(it.key, it.value.toString().toInt()))
-//                            productListener.value = products
-//                        }
-//                    }
-//                }
             } else {
                 Log.d("TAG", "Current data: null")
             }

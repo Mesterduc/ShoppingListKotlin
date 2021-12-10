@@ -14,7 +14,6 @@ import com.google.firebase.ktx.Firebase
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: LoginMainBinding
     private lateinit var auth: FirebaseAuth
-    lateinit var viewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,23 +24,30 @@ class LoginActivity : AppCompatActivity() {
         setContentView(view)
 
         binding.loginButton.setOnClickListener {
-            var email = binding.loginEmail.text.toString()
-            var password = binding.loginPassword.text.toString()
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Log.d("TAG", "signInWithEmail:success")
-                        var intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w("TAG", "signInWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            this, "Authentication failed.",
-                            Toast.LENGTH_SHORT
-                        ).show()
+            val email = binding.loginEmail.text
+            val password = binding.loginPassword.text
+            if (email.isNotEmpty() && password.isNotEmpty()) {
+                auth.signInWithEmailAndPassword(email.toString(), password.toString())
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            Log.d("TAG", "signInWithEmail:success")
+                            var intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("TAG", "signInWithEmail:failure", task.exception)
+                            Toast.makeText(
+                                this, "Authentication failed.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }
+            }else {
+                Toast.makeText(
+                    this, "Email or password is empty",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
